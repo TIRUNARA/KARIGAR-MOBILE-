@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="terracotta_primary">#B85B35</color>
+    <color name="terracotta_dark">#914324</color>
+    <color name="clay_forest">#415A44</color>
+    <color name="sand_cream">#F5EBE1</color>
+    <color name="earth_black">#241B17</color>
+    <color name="warm_white">#FFFDF9</color>
+</resources>
+

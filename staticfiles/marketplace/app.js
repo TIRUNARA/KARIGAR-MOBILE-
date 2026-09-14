@@ -140,35 +140,88 @@ function appendSaathiMessage(sender, text, meta) {
     container.scrollTop = container.scrollHeight;
 }
 
+const SHIVA_GEMINI_API_KEY = window.KARIGAR_GEMINI_KEY || "AIzaSyAr_sl9biCX4CUj4HHJ_WnPNsW1luJHVQk";
+
+async function callDirectGeminiAI(query, action, lang) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${SHIVA_GEMINI_API_KEY}`;
+    const systemPrompt = "You are Saathi (साथी), the AI companion, cultural advisor, and co-creator for Indian artisans on KARIGAR. You champion authentic Indian handmade heritage (Bankura terracotta, Varanasi silk, Channapatna toys, Madhubani art, Dhokra bell metal, etc.) and fair living wages. Provide warm, concise, and empowering answers in the requested language.";
+
+    const requestBody = {
+        contents: [
+            {
+                role: "user",
+                parts: [
+                    {
+                        text: `Language: ${lang}\nArtisan Action: ${action}\nQuery / Spoken Note: ${query}\nProvide helpful, culturally grounded advice.`
+                    }
+                ]
+            }
+        ],
+        systemInstruction: {
+            parts: [{ text: systemPrompt }]
+        }
+    };
+
+    const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) throw new Error(`Gemini API error: ${response.status}`);
+    const result = await response.json();
+    const replyText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!replyText) throw new Error("Empty candidate from Gemini API");
+    return replyText;
+}
+
 async function querySaathiAI(query, action = "general") {
     const loader = document.getElementById("saathiLoading");
     if (loader) loader.style.display = "block";
 
+    // Tactile haptic feedback on Android
+    if (window.KarigarNative && typeof window.KarigarNative.vibrate === "function") {
+        try { window.KarigarNative.vibrate(30); } catch (e) { }
+    }
+
+    const currentLang = window.CURRENT_LANG || localStorage.getItem("karigar_lang") || "en";
+
     try {
-        const response = await fetch("/saathi/api/chat/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                query: query,
-                action: action,
-                language: window.CURRENT_LANG || localStorage.getItem("karigar_lang") || "en",
-            }),
-        });
+        // 1. Try Backend API
+        try {
+            const response = await fetch("/saathi/api/chat/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    query: query,
+                    action: action,
+                    language: currentLang,
+                }),
+            });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error ${response.status}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.reply) {
+                    appendSaathiMessage("saathi", data.reply, data);
+                    return;
+                }
+            }
+        } catch (err) {
+            console.warn("Backend /saathi/api/chat/ unreachable, switching to Direct Gemini 2.5 Flash:", err);
         }
 
-        const data = await response.json();
-        if (data && data.reply) {
-            appendSaathiMessage("saathi", data.reply, data);
-        } else {
-            appendSaathiMessage("saathi", "I could not complete that craft inquiry. Please try again.");
+        // 2. Direct Gemini 2.5 Flash Fallback
+        try {
+            const geminiReply = await callDirectGeminiAI(query, action, currentLang);
+            appendSaathiMessage("saathi", geminiReply, { engine: "gemini-2.5-flash-direct" });
+            return;
+        } catch (geminiErr) {
+            console.warn("Direct Gemini invocation failed or offline, falling back to offline knowledge base:", geminiErr);
         }
-    } catch (err) {
-        console.warn("Saathi API fallback invocation:", err);
+
+        // 3. Cultural Knowledge Base Fallback
         appendSaathiMessage(
             "saathi",
             "Namaste! Here is fair living guidance from your heritage knowledge copilot:\n\n" +

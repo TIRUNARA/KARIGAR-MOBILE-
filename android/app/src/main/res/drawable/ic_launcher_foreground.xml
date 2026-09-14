@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Traditional Indian Artisan Pot / Diya Emblem -->
+    <path
+        android:fillColor="#FFFDF9"
+        android:pathData="M54,28 C50,28 46,31 46,35 L46,38 C40,42 36,49 36,58 C36,70 44,79 54,79 C64,79 72,70 72,58 C72,49 68,42 62,38 L62,35 C62,31 58,28 54,28 Z M54,34 C55.5,34 56.5,35 56.5,36 L56.5,38 L51.5,38 L51.5,36 C51.5,35 52.5,34 54,34 Z M54,74 C47,74 41,67 41,58 C41,51 44.5,45 50,42.5 L50,45 C50,46.5 51.5,48 54,48 C56.5,48 58,46.5 58,45 L58,42.5 C63.5,45 67,51 67,58 C67,67 61,74 54,74 Z" />
+</vector>
+

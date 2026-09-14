@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">KARIGAR</string>
+    <string name="app_tagline">Smart Cataloging &amp; Rural Artisan Marketplace</string>
+    <string name="saathi_name">Saathi AI</string>
+    <string name="offline_title">You are offline</string>
+    <string name="offline_message">Please check your internet connection to access the live Karigar artisan directory.</string>
+    <string name="retry">Retry</string>
+</resources>
+

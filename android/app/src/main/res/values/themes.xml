@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.KarigarMobile" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/terracotta_primary</item>
+        <item name="colorPrimaryVariant">@color/terracotta_dark</item>
+        <item name="colorOnPrimary">@color/warm_white</item>
+        <item name="colorSecondary">@color/clay_forest</item>
+        <item name="android:statusBarColor">@color/warm_white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowBackground">@color/warm_white</item>
+    </style>
+</resources>
+
